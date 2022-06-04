@@ -3,6 +3,7 @@ module Parser
     ) where
 
 import           Options.Applicative
+import Text.Regex.TDFA
 
 data Options = Options
     { optRule          :: String
@@ -12,8 +13,18 @@ data Options = Options
     }
     deriving (Eq, Show)
 
+validRule :: String -> Bool
+validRule r = r =~ "B[0-9]+/S[0-9]+"
+
+ruleValidator :: ReadM String
+ruleValidator = do
+    r <- auto
+    if validRule r
+        then return r
+        else readerError "Rule is not of the format \"B{number list}/S{number list}\""
+
 ruleParser :: Parser String
-ruleParser = option auto (long "rule" <> short 'r')
+ruleParser = option ruleValidator (long "rule" <> short 'r')
 
 numIterationsParser :: Parser Int
 numIterationsParser = option auto (long "numIterations" <> short 'n')
