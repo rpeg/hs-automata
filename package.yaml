@@ -23,6 +23,7 @@ dependencies:
 - base >= 4.7 && < 5
 - regex-tdfa
 - optparse-applicative
+- random
 
 library:
   source-dirs: src

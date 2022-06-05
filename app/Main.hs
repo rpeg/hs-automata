@@ -1,8 +1,12 @@
 module Main where
 
-import           Parser
+import           Game                           ( simulate )
+import           Parser                         ( parseOptions )
 import           System.Environment
 
 main :: IO ()
 main = do
-    showUsage
+    opts <- parseOptions
+    let states = simulate opts
+    print states
+

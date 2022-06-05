@@ -1,15 +1,24 @@
 module Parser
-    ( showUsage
+    ( Options
+    , optRule
+    , optNumIterations
+    , optSeed
+    , optDensity
+    , optWidth
+    , optHeight
+    , parseOptions
     ) where
 
 import           Options.Applicative
-import Text.Regex.TDFA
+import           Text.Regex.TDFA
 
 data Options = Options
     { optRule          :: String
     , optNumIterations :: Int
     , optSeed          :: Int
     , optDensity       :: Double
+    , optWidth         :: Int
+    , optHeight        :: Int
     }
     deriving (Eq, Show)
 
@@ -21,7 +30,8 @@ ruleValidator = do
     r <- auto
     if validRule r
         then return r
-        else readerError "Rule is not of the format \"B{number list}/S{number list}\""
+        else readerError
+            "Rule is not of the format \"B{number list}/S{number list}\""
 
 ruleParser :: Parser String
 ruleParser = option ruleValidator (long "rule" <> short 'r')
@@ -47,6 +57,12 @@ densityValidator = do
 densityParser :: Parser Double
 densityParser = option densityValidator (long "density" <> short 'd')
 
+widthParser :: Parser Int
+widthParser = option auto (long "width" <> short 'w')
+
+heightParser :: Parser Int
+heightParser = option auto (long "height" <> short 'h')
+
 optionsParser :: Parser Options
 optionsParser =
     Options
@@ -54,11 +70,11 @@ optionsParser =
         <*> numIterationsParser
         <*> seedParser
         <*> densityParser
+        <*> widthParser
+        <*> heightParser
 
-showUsage :: IO ()
-showUsage = do
-    opts <- execParser opts
-    print opts
+parseOptions :: IO Options
+parseOptions = execParser opts
   where
     opts = info
         (optionsParser <**> helper)
